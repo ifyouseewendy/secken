@@ -10,9 +10,9 @@ module Secken
       yield( @config = Configuration.new )
     end
 
-    def qrcode_for_binding
+    def qrcode_for_binding(options = {})
       url = 'https://api.yangcong.com/v2/qrcode_for_binding'
-      request(:get, url, { app_id: config.app_id })
+      request(:get, url, { app_id: config.app_id , callback: options[:callback]})
     end
 
     private
@@ -22,22 +22,20 @@ module Secken
         Digest::MD5.hexdigest(content)
       end
 
-      def request(method, url, params)
+      def request(method, url, params, valid_keys = [:app_id])
+        signature = sign_on(params.select{|k,v| valid_keys.include? k})
+        signed_params = params.merge({signature: signature})
+
         if method == :get
-          signed_params = params.merge({signature: sign_on(params)})
           query = query_string_from signed_params
           uri   = URI( [url, query].join('?') )
 
           puts "--> GET #{uri}"
           JSON.parse(Net::HTTP.get uri).tap{|resp| puts resp}
         elsif method == :post
-          valid_keys = [:action_type, :app_id, :uid]
-          signed_params = params.merge({signature: sign_on(params.select{|k,v| valid_keys.include? k})})
-          uri = URI(url)
 
           puts "--> POST #{url} with #{signed_params}"
-
-          JSON.parse(Net::HTTP.post_form(URI(url), params).body).tap{|resp| puts resp}
+          JSON.parse(Net::HTTP.post_form(URI(url), signed_params).body).tap{|resp| puts resp}
         end
       end
 
