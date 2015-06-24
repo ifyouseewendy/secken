@@ -63,6 +63,24 @@ module Secken
       )
     end
 
+    def offline_authorization(options = {})
+      assert_present_keys(options, :dynamic_code, :uid)
+      url = 'https://api.yangcong.com/v2/offline_authorization'
+
+      request(
+        :post,
+        url,
+        {
+          app_id:       config.app_id,
+          uid:          options[:uid],
+          dynamic_code: options[:dynamic_code]
+        },
+        {
+          valid_keys: [:app_id, :dynamic_code, :uid],
+        }
+      )
+    end
+
     def event_result(options = {})
       assert_present_keys(options, :event_id)
 

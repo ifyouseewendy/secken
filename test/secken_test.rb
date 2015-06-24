@@ -47,6 +47,16 @@ class SeckenTest < Minitest::Test
     assert 400, @client.realtime_authorization(action_type: 1, uid: uid)['error_code']
   end
 
+  def test_offline_authorization
+    assert_raises RuntimeError, /No \w passed/ do
+      @client.offline_authorization
+    end
+
+    uid = '' # Fetch your own uid from event_result
+    dynamic_code = '123123'
+    assert 400, @client.offline_authorization(uid: uid, dynamic_code: dynamic_code)['status']
+  end
+
   def test_event_result
     assert_raises RuntimeError, /No \w passed/ do
       @client.event_result
