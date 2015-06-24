@@ -26,7 +26,7 @@ module Secken
       assert_present_keys(options, :event_id)
 
       url = 'https://api.yangcong.com/v2/event_result'
-      request(:get, url, app_id: config.app_id , event_id: options[:event_id])
+      request(:get, url, app_id: config.app_id , event_id: options[:event_id]).tap{|resp| validate_signature(resp) }
     end
 
     def realtime_authorization(options = {})
@@ -79,6 +79,10 @@ module Secken
 
       def assert_present_keys(ha, *keys)
         keys.each{|k| ha.fetch(k){ raise "No #{k} passed." }}
+      end
+
+      def validate_signature(resp)
+        # TODO
       end
 
   end
