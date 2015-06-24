@@ -23,4 +23,14 @@ class SeckenTest < Minitest::Test
       assert resp.key?('qrcode_url')
     end
   end
+
+  def test_qrcode_for_auth
+    resp = @client.qrcode_for_auth(callback: '') # Use ngrok to mock callback
+    assert resp.key?('status')
+
+    if resp['status'] == 200
+      assert resp.key?('event_id')
+      assert resp.key?('qrcode_url')
+    end
+  end
 end

@@ -16,6 +16,11 @@ module Secken
       request(:get, url, { app_id: config.app_id , callback: options[:callback]})
     end
 
+    def qrcode_for_auth(options = {})
+      url = 'https://api.yangcong.com/v2/qrcode_for_auth'
+      request(:get, url, { app_id: config.app_id , callback: options[:callback]})
+    end
+
     private
 
       def sign_on(params)
