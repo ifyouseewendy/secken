@@ -22,11 +22,23 @@ module Secken
       request(:get, url, app_id: config.app_id , callback: options[:callback])
     end
 
-    def event_result(options = {})
-      assert_present_keys(options, :event_id)
+    def auth_page(options = {})
+      assert_present_keys(options, :callback)
+      url = 'https://auth.yangcong.com/v2/auth_page'
 
-      url = 'https://api.yangcong.com/v2/event_result'
-      request(:get, url, app_id: config.app_id , event_id: options[:event_id]).tap{|resp| validate_signature(resp) }
+      request(
+        :get,
+        url,
+        {
+          auth_id:    config.auth_id,
+          timestamp:  Time.now.to_i,
+          callback:   options[:callback]
+        },
+        {
+          valid_keys: [:auth_id, :callback, :timestamp],
+          parse_json: false
+        }
+      )
     end
 
     def realtime_authorization(options = {})
@@ -45,8 +57,17 @@ module Secken
           user_ip:      options[:user_ip],
           username:     options[:username]
         },
-        [:action_type, :app_id, :uid]
+        {
+          valid_keys: [:action_type, :app_id, :uid],
+        }
       )
+    end
+
+    def event_result(options = {})
+      assert_present_keys(options, :event_id)
+
+      url = 'https://api.yangcong.com/v2/event_result'
+      request(:get, url, app_id: config.app_id , event_id: options[:event_id]).tap{|resp| validate_signature(resp) }
     end
 
     private
@@ -56,13 +77,14 @@ module Secken
         Digest::MD5.hexdigest(content)
       end
 
-      def request(method, url, params, valid_keys = [:app_id])
-        signature = sign_on(params.select{|k,v| valid_keys.include? k})
+      def request(method, url, params, options = {valid_keys: [:app_id], parse_json: true} )
+        signature = sign_on(params.select{|k,v| options[:valid_keys].include? k})
         signed_params = params.merge({signature: signature})
 
         if method == :get
           query = query_string_from signed_params
           uri   = URI( [url, query].join('?') )
+          return uri.to_s unless options[:parse_json]
 
           puts "--> GET #{uri}"
           JSON.parse(Net::HTTP.get uri).tap{|resp| puts resp}
