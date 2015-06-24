@@ -1,4 +1,5 @@
 require 'net/http'
+require 'cgi'
 require 'digest'
 require 'json'
 
@@ -40,7 +41,7 @@ module Secken
       end
 
       def query_string_from(hash)
-        hash.map{|ar| ar.join('=')}.join('&')
+        hash.map{|k,v| "#{k}=#{CGI.escape(v.to_s)}"}.join('&')
       end
 
   end
