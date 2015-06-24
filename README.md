@@ -1,39 +1,56 @@
 # Secken
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/secken`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+A Ruby Interface to Secken API.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'secken'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install secken
 
 ## Usage
 
-TODO: Write usage instructions here
+配置
 
-## Development
+```ruby
+client = Secken::Client.new do |config|
+  config.app_id  = 'YOUR_APP_ID'
+  config.app_key = 'YOUR_APP_KEY'
+  config.auth_id = 'YOUR_AUTH_ID'
+end
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+获取用户绑定二维码地址
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+client.qrcode_for_binding
+```
+
+获取用户登陆二维码地址
+
+```ruby
+client.qrcode_for_auth
+```
+
+获取用户绑定、登陆、认证结果，可轮询使用
+
+```ruby
+client.event_result
+```
+
+其他
+
+```ruby
+client.auth_page
+client.realtime_authorization
+client.offline_authorization
+```
+
+## Documentation
+
+[https://www.yangcong.com/api](https://www.yangcong.com/api)
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/secken. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
-
 
 ## License
 
