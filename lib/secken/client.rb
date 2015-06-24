@@ -6,9 +6,6 @@ require 'json'
 module Secken
   class Client
     attr_reader :config
-    attr_accessor :event_id
-
-    alias_method :last_event_id, :event_id
 
     def initialize
       @event_id = nil
@@ -17,17 +14,17 @@ module Secken
 
     def qrcode_for_binding(options = {})
       url = 'https://api.yangcong.com/v2/qrcode_for_binding'
-      request(:get, url, { app_id: config.app_id , callback: options[:callback]}).tap{|resp| self.event_id = resp['event_id'] }
+      request(:get, url, app_id: config.app_id , callback: options[:callback])
     end
 
     def qrcode_for_auth(options = {})
       url = 'https://api.yangcong.com/v2/qrcode_for_auth'
-      request(:get, url, { app_id: config.app_id , callback: options[:callback]}).tap{|resp| self.event_id = resp['event_id'] }
+      request(:get, url, app_id: config.app_id , callback: options[:callback])
     end
 
-    def event_result
+    def event_result(options = {})
       url = 'https://api.yangcong.com/v2/event_result'
-      request(:get, url, { app_id: config.app_id , event_id: event_id})
+      request(:get, url, app_id: config.app_id , event_id: options[:event_id])
     end
 
     private

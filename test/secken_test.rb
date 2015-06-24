@@ -35,11 +35,12 @@ class SeckenTest < Minitest::Test
   end
 
   def test_event_result
-    assert @client.event_id.nil?
-    assert 400, @client.event_result['status']
+    assert_raises RuntimeError, /No \w passed/ do
+      @client.event_result
+    end
 
-    @client.qrcode_for_binding
-    refute @client.event_id.nil?
-    assert 602, @client.event_result['status']
+    event_id = @client.qrcode_for_binding['event_id']
+    assert 602, @client.event_result(event_id: event_id)['status']
   end
+
 end
