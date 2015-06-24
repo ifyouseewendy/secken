@@ -33,4 +33,13 @@ class SeckenTest < Minitest::Test
       assert resp.key?('qrcode_url')
     end
   end
+
+  def test_event_result
+    assert @client.event_id.nil?
+    assert 400, @client.event_result['status']
+
+    @client.qrcode_for_binding
+    refute @client.event_id.nil?
+    assert 602, @client.event_result['status']
+  end
 end
