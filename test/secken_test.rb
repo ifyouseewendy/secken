@@ -43,4 +43,12 @@ class SeckenTest < Minitest::Test
     assert 602, @client.event_result(event_id: event_id)['status']
   end
 
+  def test_realtime_authorization
+    assert_raises RuntimeError, /No \w passed/ do
+      @client.realtime_authorization
+    end
+
+    uid = '' # Fetch your own uid from event_result
+    assert 400, @client.realtime_authorization(action_type: 1, uid: uid)['error_code']
+  end
 end

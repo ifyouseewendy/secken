@@ -23,8 +23,30 @@ module Secken
     end
 
     def event_result(options = {})
+      assert_present_keys(options, :event_id)
+
       url = 'https://api.yangcong.com/v2/event_result'
       request(:get, url, app_id: config.app_id , event_id: options[:event_id])
+    end
+
+    def realtime_authorization(options = {})
+      assert_present_keys(options, :action_type, :uid)
+      url = 'https://api.yangcong.com/v2/realtime_authorization'
+
+      request(
+        :post,
+        url,
+        {
+          action_type:  options[:action_type],
+          auth_type:    options[:auth_type],
+          app_id:       config.app_id,
+          callback:     options[:callback],
+          uid:          options[:uid],
+          user_ip:      options[:user_ip],
+          username:     options[:username]
+        },
+        [:action_type, :app_id, :uid]
+      )
     end
 
     private
@@ -53,6 +75,10 @@ module Secken
 
       def query_string_from(hash)
         hash.map{|k,v| "#{k}=#{CGI.escape(v.to_s)}"}.join('&')
+      end
+
+      def assert_present_keys(ha, *keys)
+        keys.each{|k| ha.fetch(k){ raise "No #{k} passed." }}
       end
 
   end
