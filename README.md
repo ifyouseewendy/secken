@@ -18,39 +18,53 @@ client = Secken::Client.new do |config|
 end
 ```
 
-获取用户绑定二维码地址
+获取用户绑定二维码地址，配合 `event_result` 使用。
 
 ```ruby
 client.qrcode_for_binding
 ```
 
-获取用户登陆二维码地址
+获取用户登陆二维码地址，配合 `event_result` 使用。
 
 ```ruby
 client.qrcode_for_auth
 ```
 
-获取用户绑定、登陆、认证结果，可轮询使用
-
-```ruby
-client.event_result
-```
-
-其他
+授权页
 
 ```ruby
 client.auth_page
-client.realtime_authorization
-client.offline_authorization
+```
+
+一键认证，配合 `event_result` 使用。
+
+```ruby
+client.realtime_authorization(action_type: 1, uid: 'UID')
+```
+
+动态码认证
+
+```ruby
+client.offline_authorization(uid: 'UID', dynamic_code: 'DYNAMIC_CODE')
+```
+
+获取用户绑定、登陆、认证结果，需轮询使用
+
+```ruby
+resp = nil
+loop do
+  break if (resp=client.event_result)['status'] == 200
+end
 ```
 
 ## Documentation
 
 [https://www.yangcong.com/api](https://www.yangcong.com/api)
 
-## Contributing
+## TODO
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/secken. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+1. `callback` param seems don't work in `qrcode_for_binding` and `qrcode_for_auth`
+2. Check all the option params in every API
 
 ## License
 
